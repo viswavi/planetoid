@@ -128,12 +128,15 @@ class ind_model(base_model):
         for i in range(self.x.shape[0]):
             flag = False
             for j in range(self.y.shape[1]):
-                if self.y[i, j] == 1 and not flag:
-                    labels.append(j)
-                    label2inst[j].append(i)
-                    flag = True
-                elif self.y[i, j] == 0:
-                    not_label[j].append(i)
+                try:
+                    if self.y[i, j] == 1 and not flag:
+                        labels.append(j)
+                        label2inst[j].append(i)
+                        flag = True
+                    elif self.y[i, j] == 0:
+                        not_label[j].append(i)
+                except:
+                    import pdb; pdb.set_trace()
 
         while True:
             g, gy = [], []
@@ -179,7 +182,10 @@ class ind_model(base_model):
                 self.g_fn(gx, gy, gz)
             for _ in range(self.comp_iter(iter_inst)):
                 x, y = next(self.inst_generator)
-                self.train_fn(x, y)
+                try:
+                    self.train_fn(x, y)
+                except:
+                    import pdb; pdb.set_trace()
             for _ in range(self.comp_iter(iter_label)):
                 gx, gy, gz = next(self.label_generator)
                 self.g_fn(gx, gy, gz)
