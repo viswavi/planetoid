@@ -21,7 +21,7 @@ parser.add_argument('--model_file', help = 'filename for saving models', type = 
 parser.add_argument('--use_feature', help = 'whether use input features', type = bool, default = True)
 parser.add_argument('--update_emb', help = 'whether update embedding when optimizing supervised loss', type = bool, default = True)
 parser.add_argument('--layer_loss', help = 'whether incur loss on hidden layers', type = bool, default = True)
-parser.add_argument('--fixed_train_size', default=600)
+parser.add_argument('--fixed_train_size', type = int, default=600)
 args = parser.parse_args()
 
 
@@ -50,21 +50,13 @@ def rebalance_train_test(x, y, tx, ty, allx, graph, test_indices, fixed_train_si
     for i in range(points_to_add):
         index_map[test_indices[i]] = i + len(x)
     for i in range(fixed_train_size, len(allx)):
-        if i in index_map:
-            raise ValueError("O")
         index_map[i - points_to_add] = i
 
     new_graph = {}
     for k, v in graph.items():
-        try:
-            new_graph[index_map.get(k, k)] = []
-        except:
-            import pdb; pdb.set_trace()
+        new_graph[index_map.get(k, k)] = []
         for vv in v:
-            try:
-                new_graph[index_map.get(k, k)].append(index_map.get(vv, vv))
-            except:
-                import pdb; pdb.set_trace()
+            new_graph[index_map.get(k, k)].append(index_map.get(vv, vv))
 
     # Map everything back to corresponding sparse/np types
     return sp.csr_matrix(new_x, dtype=np.float32), new_y, sp.csr_matrix(new_tx, dtype=np.float32), new_ty, sp.csr_matrix(allx, dtype=np.float32), graph
