@@ -83,7 +83,7 @@ m.add_data(x, y, allx, graph)                                   # add data
 m.build()                                                       # build the model
 m.init_train(init_iter_label = 10000, init_iter_graph = 400)    # pre-training
 iter_cnt, max_accu = 0, 0
-patience = 50000
+patience = 2500
 patience_counter = 0
 while True:
     m.step_train(max_iter = 1, iter_graph = 0.1, iter_inst = 1, iter_label = 0) # perform a training step
@@ -98,3 +98,5 @@ while True:
         patience_counter = 0
     else:
         patience_counter += 1
+    if patience_counter > patience:
+        break
